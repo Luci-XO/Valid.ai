@@ -1,0 +1,49 @@
+{"id": "h01", "tag": "phrasing", "country": "FRD", "text": "Under our government, joblessness has dropped to 4.2 per cent.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}]}
+{"id": "h02", "tag": "multiplier", "country": "FRD", "text": "Unemployment has nearly halved since 2020.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}]}
+{"id": "h03", "tag": "rounding", "country": "FRD", "text": "Inflation is running at 5%.", "expected": [{"verdict": "supported", "indicator": "FP.CPI.TOTL.ZG"}]}
+{"id": "h04", "tag": "phrasing", "country": "FRD", "text": "Consumer prices rose 6.7% in 2022.", "expected": [{"verdict": "supported", "indicator": "FP.CPI.TOTL.ZG"}]}
+{"id": "h05", "tag": "known-gap", "country": "FRD", "text": "Prices rose 6.7% in 2022.", "expected": [{"verdict": "supported", "indicator": "FP.CPI.TOTL.ZG"}]}
+{"id": "h06", "tag": "no-data", "country": "FRD", "text": "The economy grew by 8.2 per cent last year.", "expected": [{"verdict": "unverifiable", "indicator": "NY.GDP.MKTP.KD.ZG"}]}
+{"id": "h07", "tag": "phrasing", "country": "FRD", "text": "In 2021 the economy expanded 9.7%, the fastest in decades.", "expected": [{"verdict": "supported", "indicator": "NY.GDP.MKTP.KD.ZG"}]}
+{"id": "h08", "tag": "negative-growth", "country": "FRD", "text": "GDP shrank 5.8% during the pandemic year of 2020.", "expected": [{"verdict": "supported", "indicator": "NY.GDP.MKTP.KD.ZG"}]}
+{"id": "h09", "tag": "money", "country": "FRD", "text": "Freedonia is now a $4 trillion economy.", "expected": [{"verdict": "supported", "indicator": "NY.GDP.MKTP.CD"}]}
+{"id": "h10", "tag": "from-to", "country": "FRD", "text": "Our GDP has nearly doubled since 2015, from $2.1 trillion to $3.9 trillion.", "expected": [{"verdict": "supported", "indicator": "NY.GDP.MKTP.CD"}]}
+{"id": "h11", "tag": "multiplier", "country": "FRD", "text": "Per capita income has doubled since 2010.", "expected": [{"verdict": "supported", "indicator": "NY.GDP.PCAP.CD"}]}
+{"id": "h12", "tag": "multiplier", "country": "FRD", "text": "Per capita income tripled since 2010.", "expected": [{"verdict": "contradicted", "indicator": "NY.GDP.PCAP.CD"}]}
+{"id": "h13", "tag": "direction", "country": "FRD", "text": "Life expectancy fell to 67.2 years in 2021 amid the pandemic.", "expected": [{"verdict": "supported", "indicator": "SP.DYN.LE00.IN"}]}
+{"id": "h14", "tag": "stale", "country": "FRD", "text": "Life expectancy is 70.9 years.", "expected": [{"verdict": "misleading", "indicator": "SP.DYN.LE00.IN"}]}
+{"id": "h15", "tag": "qualifier", "country": "FRD", "text": "Infant mortality is below 25 per 1,000 live births.", "expected": [{"verdict": "supported", "indicator": "SP.DYN.IMRT.IN"}]}
+{"id": "h16", "tag": "qualifier", "country": "FRD", "text": "Infant mortality is under 20 per 1,000.", "expected": [{"verdict": "contradicted", "indicator": "SP.DYN.IMRT.IN"}]}
+{"id": "h17", "tag": "qualifier", "country": "FRD", "text": "More than 99% of Freedonians now have access to electricity.", "expected": [{"verdict": "supported", "indicator": "EG.ELC.ACCS.ZS"}]}
+{"id": "h18", "tag": "qualifier", "country": "FRD", "text": "Women's labour force participation has risen by more than 10 points since 2019.", "expected": [{"verdict": "supported", "indicator": "SL.TLF.CACT.FE.ZS"}]}
+{"id": "h19", "tag": "from-to", "country": "FRD", "text": "Female labour force participation went up from 22% to 33% between 2019 and 2024.", "expected": [{"verdict": "supported", "indicator": "SL.TLF.CACT.FE.ZS"}]}
+{"id": "h20", "tag": "two-claims", "country": "FRD", "text": "Unemployment rose to 8% in 2020 before falling to 4.2% in 2023.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}, {"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}]}
+{"id": "h21", "tag": "two-claims", "country": "FRD", "text": "Sylvania's unemployment rate is 6.6%, much higher than Freedonia's 4.2%.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}, {"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}]}
+{"id": "h22", "tag": "change", "country": "FRD", "text": "Unemployment fell by 1.1 percentage points in 2021.", "expected": [{"verdict": "contradicted", "indicator": "SL.UEM.TOTL.ZS"}]}
+{"id": "h23", "tag": "change", "country": "FRD", "text": "Unemployment fell 1.6 points in 2021.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}]}
+{"id": "h24", "tag": "phrasing", "country": "FRD", "text": "Joblessness hit a record low of 4.17% in 2023.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}]}
+{"id": "h25", "tag": "phrasing", "country": "FRD", "text": "The population crossed 1.44 billion in 2024.", "expected": [{"verdict": "supported", "indicator": "SP.POP.TOTL"}]}
+{"id": "h26", "tag": "rounding", "country": "FRD", "text": "Freedonia is home to 1.5 billion people.", "expected": [{"verdict": "inaccurate", "indicator": "SP.POP.TOTL"}]}
+{"id": "h27", "tag": "unknown-series", "country": "FRD", "text": "The government spent $12 billion on health in 2023.", "expected": [{"verdict": "unverifiable", "indicator": null}]}
+{"id": "h28", "tag": "no-claim", "country": "FRD", "text": "Over 300 villages got new roads in 2023.", "expected": []}
+{"id": "h29", "tag": "subgroup", "country": "FRD", "text": "Unemployment among youth is 15%.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.1524.ZS"}]}
+{"id": "h30", "tag": "subgroup", "country": "FRD", "text": "Female unemployment is 6%.", "expected": [{"verdict": "unverifiable", "indicator": "SL.UEM.TOTL.FE.ZS"}]}
+{"id": "h31", "tag": "phrasing", "country": "FRD", "text": "Unemployment in Freedonia is the lowest in a decade at 4.2%.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}]}
+{"id": "h32", "tag": "word-order", "country": "FRD", "text": "Inflation rose to 6.6% in 2020 from 3.7% in 2019.", "expected": [{"verdict": "supported", "indicator": "FP.CPI.TOTL.ZG"}]}
+{"id": "h33", "tag": "direction", "country": "FRD", "text": "Economic growth slowed to 6.5% in 2024.", "expected": [{"verdict": "supported", "indicator": "NY.GDP.MKTP.KD.ZG"}]}
+{"id": "h34", "tag": "rounding", "country": "FRD", "text": "Economic growth accelerated to 9% in 2023.", "expected": [{"verdict": "inaccurate", "indicator": "NY.GDP.MKTP.KD.ZG"}]}
+{"id": "h35", "tag": "two-claims", "country": "FRD", "text": "Unemployment is 4.2% and inflation is 4.9%.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}, {"verdict": "supported", "indicator": "FP.CPI.TOTL.ZG"}]}
+{"id": "h36", "tag": "no-data", "country": "FRD", "text": "Poverty fell to 10% in 2022.", "expected": [{"verdict": "unverifiable", "indicator": "SI.POV.DDAY"}]}
+{"id": "h37", "tag": "word-order", "country": "FRD", "text": "Unemployment fell to 4.2% in 2023 from 4.8% in 2022.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}]}
+{"id": "h38", "tag": "no-data", "country": "FRD", "text": "The literacy rate is 77.7%.", "expected": [{"verdict": "unverifiable", "indicator": "SE.ADT.LITR.ZS"}]}
+{"id": "h39", "tag": "other-country", "country": "FRD", "text": "Sylvania's jobless rate fell for a third straight year to 6.5% in 2023.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}]}
+{"id": "h40", "tag": "lookback", "country": "FRD", "text": "Over the past five years, unemployment fell by 1.1 points.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}]}
+{"id": "h41", "tag": "known-gap", "country": "FRD", "text": "Inflation has averaged 3% over the past five years.", "expected": [{"verdict": "unverifiable", "indicator": "FP.CPI.TOTL.ZG"}]}
+{"id": "h42", "tag": "context", "country": "FRD", "text": "Sylvania has struggled. Its unemployment rate is 6.6%.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.TOTL.ZS"}]}
+{"id": "h43", "tag": "wrong", "country": "FRD", "text": "Unemployment has fallen every year since 2019 and is now 3.1%.", "expected": [{"verdict": "contradicted", "indicator": "SL.UEM.TOTL.ZS"}]}
+{"id": "h44", "tag": "no-claim", "country": "FRD", "text": "COVID-19 changed everything for the G20 in 2020.", "expected": []}
+{"id": "h45", "tag": "finder", "country": "FRD", "text": "Freedonia has just 0.6 hospital beds per 1,000 people.", "expected": [{"verdict": "supported", "indicator": "SH.MED.BEDS.ZS"}]}
+{"id": "h46", "tag": "finder", "country": "FRD", "text": "Hospital beds per 1,000 people rose 30% between 2017 and 2022.", "expected": [{"verdict": "contradicted", "indicator": "SH.MED.BEDS.ZS"}]}
+{"id": "h47", "tag": "finder", "country": "FRD", "text": "Youth unemployment fell to 14.9% in 2024.", "expected": [{"verdict": "supported", "indicator": "SL.UEM.1524.ZS"}]}
+{"id": "h48", "tag": "finder", "country": "FRD", "text": "Defence spending is 2.4% of GDP.", "expected": [{"verdict": "unverifiable", "indicator": "MS.MIL.XPND.GD.ZS"}]}
+{"id": "h49", "tag": "finder", "country": "FRD", "text": "Metro ridership grew 20% in 2023.", "expected": [{"verdict": "unverifiable", "indicator": null}]}

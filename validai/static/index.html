@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Valid.ai: check the numbers</title>
+<style>
+  :root {
+    --supported: #1a7f37; --inaccurate: #b58100; --misleading: #c2410c;
+    --contradicted: #cf222e; --unverifiable: #6e7781;
+    --bg: #f6f8fa; --card: #fff; --ink: #1f2328; --muted: #57606a; --line: #d0d7de;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--ink); }
+  header { padding: 20px 24px 8px; }
+  header h1 { margin: 0; font-size: 22px; }
+  header p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+  main { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 16px 24px 40px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  textarea { width: 100%; min-height: 220px; font: inherit; padding: 10px; border: 1px solid var(--line); border-radius: 8px; resize: vertical; }
+  .controls { display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+  select, button { font: inherit; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: #fff; }
+  button.primary { background: #1f2328; color: #fff; border-color: #1f2328; cursor: pointer; }
+  button.primary:disabled { opacity: .5; cursor: wait; }
+  .examples { margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .examples button { font-size: 13px; padding: 2px 8px; margin: 2px 4px 2px 0; cursor: pointer; }
+  #marked { white-space: pre-wrap; line-height: 1.8; }
+  mark { background: none; border-bottom: 3px solid; padding: 0 1px; cursor: pointer; }
+  mark:hover { background: #0000000d; }
+  .summary { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+  .pill { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; color: #fff; text-transform: uppercase; letter-spacing: .03em; }
+  .card { border: 1px solid var(--line); border-left: 5px solid; border-radius: 8px; padding: 12px; margin: 10px 0; }
+  .card.flash { box-shadow: 0 0 0 3px #0969da55; }
+  .card .quote { font-style: italic; margin: 6px 0; }
+  .card .why { margin: 6px 0; }
+  .card .meta { font-size: 13px; color: var(--muted); }
+  .card a { color: #0969da; }
+  svg.spark { display: block; margin-top: 8px; }
+  .err { color: var(--contradicted); }
+  .muted { color: var(--muted); font-size: 13px; }
+  .found { font-size: 13px; background: #ddf4ff; border-radius: 6px; padding: 6px 8px; margin: 6px 0; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Valid.ai</h1>
+  <p>Paste a speech, article, or post. AI finds each number claim and the official series it refers to. The real figure is then fetched and checked in code, so the AI never makes up a number.</p>
+  <p id="aistatus" class="muted"></p>
+</header>
+<main>
+  <section class="panel">
+    <textarea id="input" placeholder="e.g. India's unemployment rate fell to 4.2% in 2023, while inflation was 5.7%."></textarea>
+    <div class="controls">
+      <label>Default country <select id="country"></select></label>
+      <label>Extractor
+        <select id="extractor"><option value="rules">Rules (fast)</option><option value="llm">Local AI</option></select>
+      </label>
+      <button class="primary" id="go">Check claims</button>
+    </div>
+    <div class="examples">Examples: <span id="examples"></span></div>
+    <p class="muted" id="sourceinfo"></p>
+  </section>
+  <section class="panel">
+    <div id="status" class="muted">Results appear here.</div>
+    <div id="summary" class="summary"></div>
+    <div id="marked"></div>
+    <div id="cards"></div>
+  </section>
+</main>
+<script>
+const COLORS = {supported:"var(--supported)", inaccurate:"var(--inaccurate)", misleading:"var(--misleading)", contradicted:"var(--contradicted)", unverifiable:"var(--unverifiable)"};
+const EXAMPLES = [
+  ["Jobs", "India's unemployment rate fell from 8% in 2020 to 4.2% in 2023. Unemployment is currently 5.3%."],
+  ["Economy", "The economy contracted 5.8% in 2020, but GDP grew 7% in 2022. India's GDP is now $3.9 trillion."],
+  ["Social", "Life expectancy rose to 72 years in 2023, while infant mortality fell by 30% since 2015. Nearly 100% of people have access to electricity."],
+  ["Beyond the catalog", "Youth unemployment fell to 15% in 2023. India has just 0.6 hospital beds per 1,000 people. Remittances reached $125 billion in 2023."],
+];
+
+const $ = (id) => document.getElementById(id);
+const el = (tag, attrs = {}, text) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  if (text !== undefined) n.textContent = text;
+  return n;
+};
+const safeUrl = (u) => { try { const x = new URL(u); return (x.protocol === "https:" || x.protocol === "http:") ? x.href : null; } catch { return null; } };
+
+async function init() {
+  for (const [label, text] of EXAMPLES) {
+    const b = el("button", {type: "button"}, label);
+    b.onclick = () => { $("input").value = text; run(); };
+    $("examples").append(b);
+  }
+  try {
+    const meta = await (await fetch("/api/meta")).json();
+    for (const [code, name] of Object.entries(meta.countries)) {
+      const o = el("option", {value: code}, `${name} (${code})`);
+      if (code === meta.default_country) o.selected = true;
+      $("country").append(o);
+    }
+    const ai = $("aistatus"); ai.replaceChildren();
+    const dot = el("span", {class: "dot"}); dot.style.background = meta.llm_available ? "var(--supported)" : "var(--unverifiable)";
+    ai.append(dot);
+    if (meta.llm_available) {
+      ai.append(document.createTextNode(`Local AI on: ${meta.llm}. Series finder knows ${meta.series_index_size} official series.`));
+      $("extractor").value = "llm";
+    } else {
+      $("extractor").querySelector('[value="llm"]').disabled = true;
+      ai.append(document.createTextNode(meta.llm_missing_model
+        ? `Ollama is running but the model isn't downloaded. Run: ollama pull ${meta.llm.split(" ")[0]}`
+        : `Local AI off: install Ollama (ollama.com) and run "ollama pull ${meta.llm.split(" ")[0]}". Using keyword search over ${meta.series_index_size} series.`));
+    }
+    $("sourceinfo").textContent = `Data source: ${meta.source}`;
+  } catch (e) {
+    $("status").textContent = "Couldn't reach the server.";
+  }
+}
+
+function sparkline(evidence, highlightYears) {
+  const NS = "http://www.w3.org/2000/svg";
+  const W = 260, H = 50, P = 4;
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("class", "spark"); svg.setAttribute("width", W); svg.setAttribute("height", H + 14);
+  if (evidence.length < 2) return svg;
+  const xs = evidence.map(e => e.year), ys = evidence.map(e => e.value);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const sx = y => P + (W - 2 * P) * (y - x0) / ((x1 - x0) || 1);
+  const sy = v => H - P - (H - 2 * P) * (v - y0) / ((y1 - y0) || 1);
+  const path = document.createElementNS(NS, "polyline");
+  path.setAttribute("points", evidence.map(e => `${sx(e.year)},${sy(e.value)}`).join(" "));
+  path.setAttribute("fill", "none"); path.setAttribute("stroke", "#57606a"); path.setAttribute("stroke-width", "1.5");
+  svg.append(path);
+  for (const e of evidence) {
+    if (!highlightYears.has(e.year)) continue;
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("cx", sx(e.year)); c.setAttribute("cy", sy(e.value)); c.setAttribute("r", 3.5); c.setAttribute("fill", "#0969da");
+    svg.append(c);
+  }
+  for (const [x, label] of [[P, x0], [W - P - 28, x1]]) {
+    const t = document.createElementNS(NS, "text");
+    t.setAttribute("x", x); t.setAttribute("y", H + 12); t.setAttribute("font-size", "10"); t.setAttribute("fill", "#57606a");
+    t.textContent = label; svg.append(t);
+  }
+  return svg;
+}
+
+function renderMarked(text, claims) {
+  const box = $("marked"); box.replaceChildren();
+  let pos = 0;
+  claims.map((c, i) => ({...c, i})).sort((a, b) => a.claim.start - b.claim.start).forEach(c => {
+    const {start, end} = c.claim;
+    if (start < pos) return;
+    box.append(document.createTextNode(text.slice(pos, start)));
+    const m = el("mark", {title: c.verdict}, text.slice(start, end));
+    m.style.borderColor = COLORS[c.verdict];
+    m.onclick = () => { const card = $("card-" + c.i); card.scrollIntoView({behavior: "smooth", block: "center"}); card.classList.add("flash"); setTimeout(() => card.classList.remove("flash"), 1200); };
+    box.append(m);
+    pos = end;
+  });
+  box.append(document.createTextNode(text.slice(pos)));
+}
+
+function renderCards(claims) {
+  const box = $("cards"); box.replaceChildren();
+  claims.forEach((c, i) => {
+    const card = el("div", {class: "card", id: "card-" + i});
+    card.style.borderLeftColor = COLORS[c.verdict];
+    const pill = el("span", {class: "pill"}, c.verdict); pill.style.background = COLORS[c.verdict];
+    card.append(pill, el("div", {class: "quote"}, `“${c.claim.text}”`));
+    if (c.series_match) {
+      const m = c.series_match;
+      card.append(el("div", {class: "found"}, `Series found by ${m.method}: ${m.name} (${m.code})${m.reason ? ". " + m.reason : ""}`));
+    }
+    card.append(el("div", {class: "why"}, c.explanation));
+    const meta = el("div", {class: "meta"});
+    if (c.indicator_name) meta.append(document.createTextNode(`${c.indicator_name}${c.country_name ? " · " + c.country_name : ""} · `));
+    const url = c.source_url && safeUrl(c.source_url);
+    if (url) meta.append(el("a", {href: url, target: "_blank", rel: "noopener noreferrer"}, c.source_name || "source"));
+    else if (c.source_name) meta.append(document.createTextNode(c.source_name));
+    card.append(meta);
+    if (c.evidence && c.evidence.length > 1) {
+      const hl = new Set([c.claim.year, c.claim.start_year, c.evidence[c.evidence.length - 1].year].filter(Boolean));
+      card.append(sparkline(c.evidence, hl));
+    }
+    box.append(card);
+  });
+}
+
+async function run() {
+  const text = $("input").value;
+  if (!text.trim()) return;
+  $("go").disabled = true; $("status").className = "muted"; $("status").textContent = "Checking…";
+  try {
+    const r = await fetch("/api/check", {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({text, country: $("country").value, extractor: $("extractor").value})});
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || r.statusText);
+    const n = data.claims.length;
+    $("status").textContent = n ? `${n} claim${n > 1 ? "s" : ""} found · extractor: ${data.extractor} · ${Math.round(data.timing_ms.extract + data.timing_ms.find_series + data.timing_ms.verify)} ms` : "No checkable number claims found.";
+    $("summary").replaceChildren(...Object.entries(data.summary).filter(([, k]) => k).map(([v, k]) => { const p = el("span", {class: "pill"}, `${k} ${v}`); p.style.background = COLORS[v]; return p; }));
+    renderMarked(text, data.claims);
+    renderCards(data.claims);
+  } catch (e) {
+    $("status").className = "err"; $("status").textContent = "Error: " + e.message;
+  } finally {
+    $("go").disabled = false;
+  }
+}
+
+$("go").onclick = run;
+$("input").addEventListener("keydown", e => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") run(); });
+init();
+</script>
+</body>
+</html>
