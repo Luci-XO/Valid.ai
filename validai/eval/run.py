@@ -191,8 +191,13 @@ def report(results: dict[str, dict]) -> str:
     return "\n".join(lines)
 
 
-def run(data: str, source_spec: str, systems: list[str], limit: int | None = None) -> dict[str, dict]:
-    items = load(data)[:limit] if limit else load(data)
+def run(data: str, source_spec: str, systems: list[str], limit: int | None = None, reviewed_only: bool = False) -> dict[str, dict]:
+    items = load(data)
+    if reviewed_only:
+        items = [it for it in items if it.get("reviewed") is True]
+        if not items:
+            raise SystemExit("No items have \"reviewed\": true. Check the labels first.")
+    items = items[:limit] if limit else items
     source = from_spec(source_spec)
     llm = LLMClient()
     results: dict[str, dict] = {}
@@ -222,10 +227,11 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--source", required=True)
     p.add_argument("--systems", default="rules,search,ai,llm_judge")
     p.add_argument("--limit", type=int)
+    p.add_argument("--reviewed-only", action="store_true", help="score only items marked \"reviewed\": true")
     p.add_argument("--out", help="directory for results.json and report.md")
     args = p.parse_args(argv)
 
-    results = run(args.data, args.source, [s.strip() for s in args.systems.split(",") if s.strip()], args.limit)
+    results = run(args.data, args.source, [s.strip() for s in args.systems.split(",") if s.strip()], args.limit, args.reviewed_only)
     if not results:
         print("No systems ran.", file=sys.stderr)
         return 1
