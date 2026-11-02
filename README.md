@@ -76,6 +76,8 @@ python -m validai.eval.run --data data/eval.jsonl --source snapshot:data/snapsho
 | `ai` | local LLM extractor + LLM series finder (full Valid.ai) |
 | `llm_judge` | **baseline:** the same local LLM answers from memory, with no data lookup |
 
+To build a real-world test set quickly, put one sentence per line in a text file and run `python -m validai.eval.prelabel --input data/real_sentences.txt --out data/real_claims.jsonl`. This pre-fills each label with Valid.ai's current answer and marks it `"reviewed": false`. Check every item against the official source, correct it, set `"reviewed": true`, then score with `--reviewed-only` so unchecked guesses never count.
+
 `ai` vs `llm_judge` is the headline comparison. It shows what happens when the same model has to check against real data instead of answering from memory.
 
 Current results on `tests/fixtures/hard_cases.jsonl` (49 hand-written phrasings, fictional data):
@@ -88,6 +90,8 @@ Current results on `tests/fixtures/hard_cases.jsonl` (49 hand-written phrasings,
 | False alarms on text with no claims | 0% | 0% |
 
 The `ai` and `llm_judge` columns aren't filled in yet: run them on a machine with Ollama installed. The generated set scores close to 100% because its templates match the parser, so don't present that as real-world accuracy. **For the hackathon, label 150 or more real claims** from Indian speeches and news in the JSONL format described in `validai/eval/run.py`, and report all four systems on that set.
+
+See [DEMO.md](DEMO.md) for the pitch outline and pre-demo checklist.
 
 ## Layout
 

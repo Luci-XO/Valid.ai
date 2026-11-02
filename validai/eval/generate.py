@@ -90,7 +90,8 @@ def generate(source_spec: str, n_per_series: int = 6, seed: int = 7) -> list[dic
         items.append({"id": f"{tag}-{len(items)}", "text": text, "country": country, "expected": expected, "tag": tag})
 
     countries = sorted({c for ind in catalog.indicators for c in _countries_with(source, ind)})
-    for ind in catalog.indicators.values():
+    # Only built-in series: ones the finder added at runtime have no aliases to write sentences with.
+    for ind in (i for i in catalog.indicators.values() if i.aliases):
         for country in countries:
             series = source.get_series(ind.code, country)
             if len(series) < 3:

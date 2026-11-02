@@ -343,3 +343,16 @@ def test_unit_a_few_words_after_number():
 
 def test_index_loads_seed():
     assert len(SeriesIndex.load()) >= 50
+
+
+def test_prelabel_marks_items_unreviewed(tmp_path):
+    from validai.eval.prelabel import prelabel
+
+    items = prelabel(["# comment", "", "Unemployment was 4.2% in 2023. | test source", "Nothing to see here."], SNAP, "FRD")
+    assert [it["origin"] for it in items] == ["test source", None]
+    assert items[0]["expected"][0]["verdict"] == "supported"
+    assert all(it["reviewed"] is False for it in items)
+    path = tmp_path / "real.jsonl"
+    path.write_text("\n".join(json.dumps(i) for i in items))
+    with pytest.raises(SystemExit):
+        run(str(path), SNAP, ["rules"], reviewed_only=True)

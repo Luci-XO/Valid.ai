@@ -9,18 +9,20 @@ from .models import Claim, Verdict
 from .sources.base import DataSource
 from .verify import verify_claim
 
-_catalogs: dict[int, Catalog] = {}
-
-
 def catalog_for(source: DataSource) -> Catalog:
-    """The default catalog plus any countries the source adds."""
-    key = id(source)
-    if key not in _catalogs:
+    """The default catalog plus any countries the source adds.
+
+    Cached on the source object itself. (Caching by id() was a bug: ids are
+    reused after garbage collection, so a new source could get an old
+    source's catalog.)
+    """
+    cat = getattr(source, "_validai_catalog", None)
+    if cat is None:
         cat = Catalog()
         for code, (name, aliases) in source.extra_countries().items():
             cat.add_country(code, name, aliases)
-        _catalogs[key] = cat
-    return _catalogs[key]
+        source._validai_catalog = cat
+    return cat
 
 
 def _needs_series(c: Claim) -> bool:
